@@ -1,0 +1,68 @@
+{
+    "header": {
+        "es": {
+            "about": "Acerca de",
+            "login": "Iniciar Sesión"
+        },
+        "en": {
+            "about": "About",
+            "login": "Login"
+        }
+    },
+    "main": {
+        "es": {
+            "textPrimary": "Bienvenido al Simulador de Economía",
+            "textSecondary": "La plataforma de economía colaborativa que conecta usuarios y potencia el conocimiento económico.",
+            "buttonPrimary": "Empezar ahora",
+            "buttonSecondary": "Saber más",
+            "tagPrimary": {
+                "title": "Conexiones Económicas",
+                "description": "Conecta con otros usuarios para intercambiar bienes y servicios de manera segura."
+            },
+            "tagSecondary": {
+                "title": "Transacciones Rápidas",
+                "description": "Realiza transacciones instantáneas con nuestra plataforma optimizada."
+            },
+            "tagTertiary": {
+                "title": "Crecimiento Económico",
+                "description": "Potencia tu crecimiento económico a través de nuestra comunidad colaborativa."
+            },
+            "contactTitle": "Contáctanos ahora",
+            "contactDescription": "Si tienes alguna pregunta, reportar un problema o sugerencia, no dudes en contactarnos. Gracias.",
+            "contactFooter": "Nos pondremos en contacto con usted lo antes posible."
+        },
+        "en": {
+            "textPrimary": "Welcome to Economy Sim",
+            "textSecondary": "The platform for collaborative economy that connects users and powers the knowledge of the economy.",
+            "buttonPrimary": "Get started",
+            "buttonSecondary": "Learn more",
+            "tagPrimary": {
+                "title": "Economic Connections",
+                "description": "Connect with others to exchange goods and services securely."
+            },
+            "tagSecondary": {
+                "title": "Instant Transactions",
+                "description": "Perform instant transactions with our optimized platform."
+            },
+            "tagTertiary": {
+                "title": "Economic Growth",
+                "description": "Power your economic growth through our collaborative community."
+            },
+            "contactTitle": "Contact us now",
+            "contactDescription": "If you have any questions, report a problem or suggest a feature, don't hesitate to contact us. Thank you.",
+            "contactFooter": "We'll get back to you as soon as possible."
+        }
+    },
+    "footer": {
+        "es": {
+            "copyright": "© 2022 Naja. Todos los derechos reservados.",
+            "terms": "Términos y Condiciones",
+            "privacy": "Política de privacidad"
+        },
+        "en": {
+            "copyright": "© 2022 Naja. All rights reserved.",
+            "terms": "Terms and Conditions",
+            "privacy": "Privacy Policy"
+        }
+    }
+}
