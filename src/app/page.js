@@ -16,19 +16,21 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
 
-  // Guardar tema en localStorage para persistencia
+  const handleToggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light'; // Obtén el nuevo tema
+    toggleTheme(newTheme); // Actualiza el estado
+    document.body.className = newTheme; // Cambia la clase del body
+    localStorage.setItem('theme', newTheme); // Guarda el nuevo tema en localStorage
+  }
+
+  // Aplicar el tema al body y inicializar desde localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) toggleTheme(savedTheme);
+      const savedTheme = localStorage.getItem('theme') || 'light'; // Valor por defecto 'light'
+      toggleTheme(savedTheme); // Establece el estado del tema
+      document.body.className = savedTheme; // Cambia la clase del body
     }
   }, [toggleTheme]);
-
-  // Aplicar el tema al body
-  useEffect(() => {
-    document.body.className = theme;
-    localStorage.setItem('theme', theme);
-  }, [theme]);
 
   console.log(theme);
 
@@ -149,7 +151,7 @@ export default function Home() {
           <Link className="text-xs hover:underline underline-offset-4" href="#">
             {translate.footer[language].privacy}
           </Link>
-          <Button className="flex justify-center items-center" onClick={toggleTheme} variant="outline" size="sm" aria-label="Toggle color mode">
+          <Button className="flex justify-center items-center" onClick={handleToggleTheme} variant="outline" size="sm" aria-label="Toggle color mode">
             {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
           </Button>
         </nav>
