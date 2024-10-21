@@ -18,17 +18,19 @@ export default function Home() {
 
   // Guardar tema en localStorage para persistencia
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      toggleTheme(savedTheme);
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) toggleTheme(savedTheme);
     }
   }, [toggleTheme]);
 
   // Aplicar el tema al body
   useEffect(() => {
-    document.body.className = theme; // Cambia la clase del body según el tema
-    localStorage.setItem('theme', theme); // Guarda el tema en localStorage
+    document.body.className = theme;
+    localStorage.setItem('theme', theme);
   }, [theme]);
+
+  console.log(theme);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -138,7 +140,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full max-w-7xl mx-auto shrink-0 items-center px-4 md:px-0 border-t">
+      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full max-w-7xl mx-auto shrink-0 items-center px-4 lg:px-0 border-t">
         <p className="text-xs text-gray-500 dark:text-gray-400">{translate.footer[language].copyright}</p>
         <nav className="sm:ml-auto flex items-center gap-4 sm:gap-6">
           <Link className="text-xs hover:underline underline-offset-4" href="#">
@@ -147,7 +149,7 @@ export default function Home() {
           <Link className="text-xs hover:underline underline-offset-4" href="#">
             {translate.footer[language].privacy}
           </Link>
-          <Button className="flex justify-center items-center" onClick={toggleTheme} variant="outline" size="sm">
+          <Button className="flex justify-center items-center" onClick={toggleTheme} variant="outline" size="sm" aria-label="Toggle color mode">
             {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
           </Button>
         </nav>
