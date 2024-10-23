@@ -3,13 +3,17 @@
 import { create } from 'zustand';
 
 const useGlobal = create((set) => ({
+    loading: true,
     language: 'es',
     theme: 'light',
-    toggleLanguage: () => set((state) => ({
-        language: state.language === 'es' ? 'en' : 'es',
+    toggleLanguage: (arg) => set(() => ({
+        language: arg,
     })),
-    toggleTheme: () => set((state) => ({
-        theme: state.theme === 'light' ? 'dark' : 'light',
+    toggleTheme: (arg) => set(() => ({
+        theme: arg,
+    })),
+    toggleLoading: (arg) => set(() => ({
+        loading: arg,
     })),
 }));
 
