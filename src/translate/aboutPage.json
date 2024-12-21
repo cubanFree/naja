@@ -1,0 +1,66 @@
+{
+    "main": {
+        "es": {
+            "textPrimary": "Acerca de Naja",
+            "textSecondary": "Transformando la economía colaborativa a través de la innovación y la confianza.",
+            "tagPrimary": {
+                "title": "Nuestra Misión",
+                "description": "Empoderar a las personas para crear y participar en una economía más justa y sostenible."
+            },
+            "tagSecondary": {
+                "title": "Nuestros Valores",
+                "description": "Transparencia, innovación, inclusión y empoderamiento económico."
+            },
+            "tagTertiary": {
+                "title": "Nuestra Visión",
+                "description": "Un mundo donde la colaboración económica trasciende fronteras y crea oportunidades para todos."
+            },
+            "ourTeam": {
+                "title": "Nuestro equipo",
+                "ceo": {
+                    "full_name": "Alvaro Fuentes",
+                    "role": "CEO y Fundadora"
+                },
+                "cto": {
+                    "full_name": "Carlos Rodríguez",
+                    "role": "CTO"
+                },
+                "coo": {
+                    "full_name": "Laura Martínez",
+                    "role": "Directora de Operaciones"
+                }
+            }
+        },
+        "en": {
+            "textPrimary": "About Naja",
+            "textSecondary": "Transforming the collaborative economy through innovation and trust.",
+            "tagPrimary": {
+                "title": "Our Mission",
+                "description": "Empower people to create and participate in a more just and sustainable economy."
+            },
+            "tagSecondary": {
+                "title": "Our Values",
+                "description": "Transparency, innovation, inclusivity and economic empowerment."
+            },
+            "tagTertiary": {
+                "title": "Our Vision",
+                "description": "A world where economic collaboration transcends borders and creates opportunities for everyone."
+            },
+            "ourTeam": {
+                "title": "Our Team",
+                "ceo": {
+                    "full_name": "Alvaro Fuentes",
+                    "role": "CEO and Founder"
+                },
+                "cto": {
+                    "full_name": "Carlos Rodríguez",
+                    "role": "CTO"
+                },
+                "coo": {
+                    "full_name": "Laura Martínez",
+                    "role": "Operations Director"
+                }
+            }
+        }
+    }
+}
