@@ -1,5 +1,5 @@
 import HeaderPublic from "@/components/publicUi/headerPublic";
-import FooterPublic from "@/components/footerPublic";
+import FooterPublic from "@/components/publicUi/footerPublic";
 import LoadingContent from "@/components/loadingContent";
 
 export default function PublicLayout({ children }) {

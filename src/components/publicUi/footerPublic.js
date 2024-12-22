@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Moon, Sun } from "lucide-react";
 import useGlobal from "@/hooks/useGlobal";
 import translate from "@/translate/homePage.json";
