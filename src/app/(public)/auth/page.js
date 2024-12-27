@@ -75,6 +75,24 @@ export default function Login() {
         }
     };
 
+    // Funcion para el Login/Registro con Providers.
+    // NOTA: para cada proveedor, se configura /api/auth/[provider], /api/auth/callback
+    const handleProviderLogin = async (e, provider) => {
+        e.preventDefault();
+
+        try {
+            if (provider !== 'google' && provider !== 'github') {
+                throw new Error('[-] Proveedor no válido');
+            }
+
+            window.location.href = `/api/auth/${provider}`;
+
+        } catch (error) {
+            alert(error.message);
+            console.error('[-] Error en autenticación:', error);
+        }
+    };
+
     // Funcion para el cambio de avatar de Registro
     const handleAvatarChange = (e) => {
         const file = e.target.files?.[0];
@@ -113,7 +131,7 @@ export default function Login() {
                                     type="button"
                                     variant="outline"
                                     className="w-full"
-                                    onClick={() => console.log('Google login')}
+                                    onClick={(e) => handleProviderLogin(e, 'google')}
                                 >
                                     <FcGoogle className="mr-2 h-4 w-4" />
                                     Sign in with Google

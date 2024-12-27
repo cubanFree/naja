@@ -1,9 +1,8 @@
 import { createToken } from "@/lib/auth";
-import bcrypt from "bcrypt";
+import argon2 from "argon2";
 import { NextResponse } from "next/server";
 
-
-// POST utilizando SSO (Single Sign-On) con JWT
+// POST utilizando Auth estandard con JWT
 export async function POST(req) {
     try {
         const { email, password } = await req.json();
@@ -20,11 +19,11 @@ export async function POST(req) {
         const user = {
             id: 1,
             email: "ejemplo@exp.com",
-            passwordHash: "$2a$10$yMiwP/GDti21RNuTa9TbM.uNGRzHfL.Kuok37qOaVGpaGrm7TtG/6",
+            passwordHash: "$argon2id$v=19$m=65536,t=3,p=1$v0aiAuGwKiLUqQ+lXy5M4A$2ylUlbifJyCK+9x+Z64NtKSEzeYUHBfGU0bt4ODdg+M",
         };
 
         // Verificar si el usuario existe
-        const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+        const isValidPassword = await argon2.verify(user.passwordHash, password);
         if (email !== user.email || !isValidPassword) {
             return NextResponse.json(
                 { message: '[-] Invalid credentials' },
