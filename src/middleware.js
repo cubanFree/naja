@@ -5,7 +5,7 @@ import { cookies } from "next/headers"
 export default async function middleware(req) {
 
     const token = cookies().get('token')?.value
-    const sessionToken = cookies().get('session_token')?.value
+    const sessionToken = cookies().get('session_email')?.value
     const pathname = req.nextUrl.pathname
 
     try {

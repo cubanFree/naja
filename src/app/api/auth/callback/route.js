@@ -1,4 +1,6 @@
 // app/api/auth/callback/[provider]/route.ts
+import { supabase } from "@/lib/supabase"
+import { decodeJwt } from "jose"
 import { cookies } from 'next/headers'
 
 const PROVIDERS = {
@@ -16,39 +18,6 @@ const PROVIDERS = {
     //     clientSecret: process.env.GITHUB_CLIENT_SECRET,
     //     redirectUri: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback?provider=github`
     // }
-}
-
-async function getProviderUser(provider, accessToken) {
-
-    // Obtenemos los parametros del proveedor y configuramos el headers.
-    const config = PROVIDERS[provider]
-    const headers = {
-        Authorization: `Bearer ${accessToken}`
-    }
-
-    // Si el proveedor es GitHub, configuramos el headers para obtener el email.
-    if (provider === 'github') {
-        headers.Accept = 'application/json'
-    }
-
-    // Obtenemos los datos del usuario.
-    const response = await fetch(config.userInfoUrl, { headers })
-    if (!response.ok) throw new Error('[-] Error obteniendo datos del usuario')
-
-    const userData = await response.json()
-
-    // Si el proveedor es GitHub y el usuario no tiene email, obtenemos el email en GitHub,
-    // y lo asignamos al email del usuario.
-    if (provider === 'github' && !userData.email) {
-        const emailsResponse = await fetch('https://api.github.com/user/emails', { headers })
-        if (emailsResponse.ok) {
-            const emails = await emailsResponse.json()
-            const primaryEmail = emails.find((email) => email.primary)
-            userData.email = primaryEmail?.email
-        }
-    }
-
-    return userData
 }
 
 export async function GET(req) {
@@ -79,7 +48,7 @@ export async function GET(req) {
 
         // Obtener el token de acceso.
         // Verificamos que el tokenResponse sea exitoso.
-        // Si lo es, obtenemos el tokenData y extraemos el access_token.
+        // Si lo es, obtenemos el tokenData.
         const tokenResponse = await fetch(config.tokenUrl, {
             method: 'POST',
             headers: {
@@ -101,20 +70,59 @@ export async function GET(req) {
         }
 
         const tokenData = await tokenResponse.json()
-        const accessToken = tokenData.access_token
 
-        // Obtenemos los datos del usuario con el nombre del proveedor y el access_token.
-        const userData = await getProviderUser(provider, accessToken)
+        // Creamos un objeto con los datos del usuario.
+        const userData = {
+            email: decodeJwt(tokenData.id_token).email,
+            name: decodeJwt(tokenData.id_token).name,
+            picture: decodeJwt(tokenData.id_token).picture,
+            email_verified: decodeJwt(tokenData.id_token).email_verified
+        }
 
-        // Aquí deberías:
-        // 1. Crear o actualizar el usuario en tu base de datos
+        // Obtener el id del usuario en la base de datos...
+        // Si existe, guardamos ese id en una cookie.
+        // Si no existe, creamos un nuevo usuario, y obtenemos su id para guardarlo en una cookie.
+        const { data: existingAuthUser, error: authError } = await supabase
+            .from('auth.users')
+            .select('id')
+            .eq('email', userData.email)
+            .single()
 
-        // Creamos la respuesta de redirección con la cookie de sesión.
+        if (authError && authError.code !== 'PGRST116') {
+            throw new Error('[-] Error al verificar el usuario authenticado:', authError)
+        }
+
+        let userId = null;
+        if (!existingAuthUser) {
+            const { data: newUser, error: userError } = supabase.auth.admin
+                .createUser({
+                    email: userData.email,
+                    email_confirm: true,
+                    user_metadata: {
+                        name: userData.name,
+                        avatar_url: userData.picture
+                    }
+                })
+
+            if (userError) {
+                throw new Error('[-] Error al crear el usuario:', userError)
+            }
+
+            userId = newUser.id
+
+        } else {
+            userId = existingAuthUser.id
+        }
+
+        // Creamos la respuesta de redirección con la cookie de sesión_email y session_id.
         const response = new Response(null, {
             status: 302,
             headers: {
                 Location: '/home',
-                'Set-Cookie': `session_token=${accessToken}; HttpOnly; Path=/; SameSite=Lax; ${process.env.NODE_ENV === 'production' ? 'Secure;' : ''}`
+                'Set-Cookie': [
+                    `session_email=${userData.email}; HttpOnly; Path=/; SameSite=Lax; ${process.env.NODE_ENV === 'production' ? 'Secure;' : ''}`,
+                    `session_id=${12345678}; HttpOnly; Path=/; SameSite=Lax; ${process.env.NODE_ENV === 'production' ? 'Secure;' : ''}`
+                ]
             }
         })
 

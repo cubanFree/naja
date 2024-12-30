@@ -1,5 +1,6 @@
-import AppContent from "@/components/appContent";
 import LoadingContent from "@/components/loadingContent";
+import FooterProtected from "@/components/protectedUi/footerProtected";
+import HeaderProtected from "@/components/protectedUi/headerProtected";
 
 export const metadata = {
     title: "Home"
@@ -7,12 +8,10 @@ export const metadata = {
 
 export default function ProtectedLayout({ children }) {
     return (
-        <AppContent>
-            <LoadingContent>
-                <header>Header</header>
-                {children}
-                <footer>Footer</footer>
-            </LoadingContent>
-        </AppContent>
+        <LoadingContent>
+            <HeaderProtected />
+            {children}
+            <FooterProtected />
+        </LoadingContent>
     )
 }
