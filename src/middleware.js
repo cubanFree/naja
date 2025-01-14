@@ -1,27 +1,21 @@
 import { NextResponse } from "next/server"
-import { verifyToken } from "./lib/auth"
-import { cookies } from "next/headers"
+import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs"
 
 export default async function middleware(req) {
 
-    const token = cookies().get('token')?.value
-    const sessionToken = cookies().get('session_email')?.value
+    const res = NextResponse.next()
+    const supabase = createMiddlewareClient({ req, res })
     const pathname = req.nextUrl.pathname
 
     try {
-        // Si no tiene token y session_token
-        if (!token && !sessionToken) {
-            throw new Error('[-] Token no encontrado.');
+        const { data: { session } } = await supabase.auth.getSession()
+
+        // Verificamos si no tiene una session.
+        if (!session) {
+            throw new Error('[-] No session found')
         }
 
-        // Si existe un token
-        if (token) {
-            const { error } = await verifyToken(token)
-            if (error) throw new Error(error)
-        }
-
-        // En caso de que tenga un token o session_token,
-        // si el usuario esta en unas de la skipRoutes, lo redirige a /home.
+        // Si el usuario esta en unas de la skipRoutes, lo redirige a /home.
         const skipRoutes = ['/auth', '/']
         return (
             skipRoutes.includes(pathname)
@@ -32,7 +26,7 @@ export default async function middleware(req) {
     } catch (error) {
         console.error(error)
 
-        // Si no tiene token o session_token, lo redirige a /auth,
+        // Si no tiene una session, lo redirige a /auth,
         // en caso de que este en unas de las skipRoutes.
         const skipRoutes = ['/auth', '/about', '/']
         return (

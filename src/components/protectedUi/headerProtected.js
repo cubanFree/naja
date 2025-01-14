@@ -13,8 +13,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import SearchBar from './searchBarProtected'
 import { LogOut } from "lucide-react"
-import { logOut } from "@/lib/auth"
 import { useUser } from "@/hooks/useUser"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { useRouter } from "next/navigation"
+import { Skeleton } from "../ui/skeleton"
 
 const STATS = [
     { icon: Coins, text: '$10,000' },
@@ -27,7 +29,27 @@ export default function HeaderProtected() {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
     const [isSearchExpanded, setIsSearchExpanded] = useState(false)
 
-    const { user, isError, isLoading } = useUser()
+    const supabase = createClientComponentClient()
+    const router = useRouter()
+
+    const { data, error, isLoading } = useUser(null, 'id, company_avatar, company_name')
+
+    // Funcion para el Logout
+    const handleLogout = async () => {
+        try {
+            const { error } = await supabase.auth.signOut()
+
+            if (error) {
+                throw error
+            }
+
+            router.push('/auth')
+            router.refresh()
+
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error)
+        }
+    }
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768)
@@ -68,14 +90,27 @@ export default function HeaderProtected() {
 
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="flex items-center border-2 border-zinc-700">
-                                    <User className="h-6 w-6 rounded-full border border-gray-600" />
-                                    <ChevronDown className="h-4 w-4 ml-1" />
-                                </Button>
+                                {isLoading
+                                    ? <Skeleton className="h-8 w-20 rounded-full object-cover" />
+                                    : (error
+                                        ? <Skeleton className="h-8 w-20 rounded-full object-cover" />
+                                        : (
+                                            <Button variant="ghost" className="flex items-center border-2 border-zinc-700 px-6">
+                                                {data?.company_avatar
+                                                    ? <img src={data.company_avatar} alt="avatar_profile" className="h-6 w-6 rounded-full object-cover" />
+                                                    : <User className="h-8 w-8 border-gray-600" />
+                                                }
+                                                <ChevronDown className="h-4 w-4 ml-1" />
+                                            </Button>
+                                        )
+                                    )
+                                }
                             </DropdownMenuTrigger>
 
                             <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Perfil de Usuario</DropdownMenuLabel>
+                                <DropdownMenuLabel>
+                                    {data?.company_name || 'Perfil de Usuario'}
+                                </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 {isMobile && (
                                     <>
@@ -95,9 +130,9 @@ export default function HeaderProtected() {
                                 {[
                                     { icon: Bell, text: 'Notificaciones', func: () => { } },
                                     { icon: Settings, text: 'Configuración', func: () => { } },
-                                    { icon: LogOut, text: 'Cerrar Sesión', func: async () => { await logOut(); window.location.href = '/'; } },
+                                    { icon: LogOut, text: 'Cerrar Sesión', func: async () => { await handleLogout(); window.location.href = '/'; } },
                                 ].map(({ icon: Icon, text, func }) => (
-                                    <DropdownMenuItem key={text} onClick={func}>
+                                    <DropdownMenuItem key={text} onClick={func} className="cursor-pointer">
                                         <Icon className="h-4 w-4 mr-2" />
                                         <span>{text}</span>
                                     </DropdownMenuItem>

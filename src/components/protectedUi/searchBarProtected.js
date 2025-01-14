@@ -68,7 +68,7 @@ export default function SearchBar({ isMobile, isExpanded, onToggle = () => { }, 
                                 type="text"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                placeholder="Search..."
+                                placeholder="type to search..."
                                 className="px-4 py-0 dark:bg-zinc-800 dark:text-gray-100 focus-visible:ring-0"
                                 aria-label="Search input"
                             />

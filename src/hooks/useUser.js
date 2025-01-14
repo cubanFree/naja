@@ -2,43 +2,51 @@
 
 import useSWR from 'swr'
 
+// Fetcher que maneja tanto ID específico como usuario autenticado
 const fetcher = async (url) => {
     try {
         const response = await fetch(url)
 
         if (!response.ok) {
-            const error = new Error('[-] Failed to fetch user data')
-            error.status = response.status
-            throw error
+            const errorData = await response.json();
+            throw new Error(errorData.error || '[-] Error en el servidor (Get User)');
         }
 
-        const json = await response.json()
-        return json.data
+        return response.json()
 
     } catch (error) {
-        error.message = `[-] Error fetching user data: ${error.message}`
+        console.error(error)
         throw error
     }
 }
 
-export function useUser(id = null) {
-    const url = id ? `/api/user?id=${id}` : '/api/user'
+export function useUser(id = null, columns = '*') {
 
-    const { data, error, mutate, isValidating } = useSWR(url, fetcher, {
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false,
-        dedupingInterval: 5000,
-        errorRetryCount: 0,
-        shouldRetryOnError: (error) => {
-            return error.status >= 500 || error.status === 408
+    const {
+        data,
+        error,
+        isLoading,
+        isValidating,
+        mutate
+    } = useSWR(
+        `/api/get/user?id=${id}&columns=${columns}`,
+        fetcher,
+        {
+            revalidateOnFocus: true,      // Revalida cuando el usuario enfoca la ventana.
+            refreshInterval: 60000,       // Revalida automáticamente cada 5 segundos.
+            fallbackData: null,          // Datos predeterminados mientras carga.
+            shouldRetryOnError: true,    // Reintenta si hay errores.
         }
-    })
+    )
+
+    console.log(data, error, isLoading, isValidating)
 
     return {
-        user: data, // Aquí data ya es el contenido de json.data
-        isLoading: !error && !data && isValidating,
-        isError: error,
+        data,
+        error,
+        isLoading,
+        isValidating,
         mutate,
-        isHost: !id
+        isEmpty: !data,
     }
 }
