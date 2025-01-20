@@ -39,8 +39,6 @@ export function useUser(id = null, columns = '*') {
         }
     )
 
-    console.log(data, error, isLoading, isValidating)
-
     return {
         data,
         error,

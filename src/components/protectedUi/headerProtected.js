@@ -15,8 +15,10 @@ import SearchBar from './searchBarProtected'
 import { LogOut } from "lucide-react"
 import { useUser } from "@/hooks/useUser"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Skeleton } from "../ui/skeleton"
+import Link from "next/link"
+import { cn } from "@/lib/utils"
 
 const STATS = [
     { icon: Coins, text: '$10,000' },
@@ -31,8 +33,15 @@ export default function HeaderProtected() {
 
     const supabase = createClientComponentClient()
     const router = useRouter()
+    const pathname = usePathname()
 
     const { data, error, isLoading } = useUser(null, 'id, company_avatar, company_name')
+
+    const MENU_ITEMS = [
+        { icon: <Bell className="h-4 w-4 mr-2" />, text: 'Notificaciones', func: () => { }, href: '/notifications' },
+        { icon: <Settings className="h-4 w-4 mr-2" />, text: 'Configuración', func: () => { }, href: '/settings' },
+        { icon: <LogOut className="h-4 w-4 mr-2" />, text: 'Cerrar Sesión', func: async () => { await handleLogout(); router.push('/'); } },
+    ]
 
     // Funcion para el Logout
     const handleLogout = async () => {
@@ -91,7 +100,7 @@ export default function HeaderProtected() {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 {isLoading
-                                    ? <Skeleton className="h-8 w-20 rounded-full object-cover" />
+                                    ? <Skeleton className="h-8 w-20 rounded-md object-cover" />
                                     : (error
                                         ? <Skeleton className="h-8 w-20 rounded-full object-cover" />
                                         : (
@@ -127,14 +136,18 @@ export default function HeaderProtected() {
                                         <DropdownMenuSeparator />
                                     </>
                                 )}
-                                {[
-                                    { icon: Bell, text: 'Notificaciones', func: () => { } },
-                                    { icon: Settings, text: 'Configuración', func: () => { } },
-                                    { icon: LogOut, text: 'Cerrar Sesión', func: async () => { await handleLogout(); window.location.href = '/'; } },
-                                ].map(({ icon: Icon, text, func }) => (
+                                {MENU_ITEMS.map(({ icon, text, func, href }) => (
                                     <DropdownMenuItem key={text} onClick={func} className="cursor-pointer">
-                                        <Icon className="h-4 w-4 mr-2" />
-                                        <span>{text}</span>
+                                        <Link
+                                            href={href || '#'}
+                                            className={cn(
+                                                "flex items-center space-x-2",
+                                                (pathname === href) && 'opacity-50 pointer-events-none'
+                                            )}
+                                        >
+                                            {icon}
+                                            <span>{text}</span>
+                                        </Link>
                                     </DropdownMenuItem>
                                 ))}
                             </DropdownMenuContent>

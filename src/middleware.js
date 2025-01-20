@@ -15,6 +15,17 @@ export default async function middleware(req) {
             throw new Error('[-] No session found')
         }
 
+        // Redirecciones
+        const REDIRECT_ROUTES = {
+            '/network': '/network/inbox',
+        }
+        if (pathname in REDIRECT_ROUTES) {
+            const url = req.nextUrl.clone()
+            url.pathname = REDIRECT_ROUTES[pathname]
+
+            return NextResponse.redirect(url)
+        }
+
         // Si el usuario esta en unas de la skipRoutes, lo redirige a /home.
         const skipRoutes = ['/auth', '/']
         return (

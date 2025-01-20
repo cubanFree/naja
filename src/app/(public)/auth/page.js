@@ -12,19 +12,24 @@ import avatar_default from "@/assets/avatar_default.webp";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Loader2 } from "lucide-react";
 import { CheckCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [companyName, setCompanyName] = useState("");
     const [companyAvatar, setCompanyAvatar] = useState({ avatar_preview: null, avatar_file: null });
+
     const [isCode, setIsCode] = useState(false);
     const [code, setCode] = useState("");
     const [updatePassword, setUpdatePassword] = useState(false);
-    const [recoveryPassword, setRecoveryPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+
     const [activeTab, setActiveTab] = useState("login");
+    const router = useRouter();
     const [loadingLogin, setLoadingLogin] = useState(false);
     const [loadingRegister, setLoadingRegister] = useState(false);
+    const [loadingRecovery, setLoadingRecovery] = useState(false);
 
     // Funcion para el Login con Google
     const actionGoogleSignIn = async (e) => {
@@ -72,7 +77,7 @@ export default function Login() {
             const data = await response.json();
 
             if (data.success) {
-                window.location.href = "/home";
+                router.push('/home');
             }
 
         } catch (error) {
@@ -135,6 +140,8 @@ export default function Login() {
         const supabase = createClientComponentClient();
 
         try {
+            setLoadingRecovery(true);
+
             const { error } = await supabase.auth.resetPasswordForEmail(email)
 
             if (error) throw error
@@ -144,6 +151,9 @@ export default function Login() {
 
         } catch (error) {
             alert('*** Error en el servidor (Recovery) ***\n', error.message);
+
+        } finally {
+            setLoadingRecovery(false);
         }
     };
 
@@ -156,6 +166,8 @@ export default function Login() {
         if (!code) return alert('*** Codigo es requerido ***');
 
         try {
+            setLoadingRecovery(true);
+
             // Verificar codigo
             const { error: errorCode } = await supabase.auth.verifyOtp({
                 email: email,
@@ -171,6 +183,9 @@ export default function Login() {
         } catch (error) {
             console.log(error)
             alert('*** Error en el servidor (Code) ***\n', error.message);
+
+        } finally {
+            setLoadingRecovery(false);
         }
     };
 
@@ -183,17 +198,23 @@ export default function Login() {
         const supabase = createClientComponentClient();
 
         try {
+            setLoadingRecovery(true);
+
             // Actualizar contraseña
             const { error } = await supabase.auth.updateUser({
-                password: recoveryPassword,
+                password: newPassword,
             });
 
             if (error) throw error;
 
             alert('Contraseña actualizada con exito.');
+            router.push('/home');
 
         } catch (error) {
             alert('*** Error en el servidor (UpdatePassword) ***\n', error.message);
+
+        } finally {
+            setLoadingRecovery(false);
         }
     };
 
@@ -211,6 +232,8 @@ export default function Login() {
         setCompanyAvatar(avatar_default);
         setIsCode(false);
         setCode("");
+        setUpdatePassword(false);
+        setNewPassword("");
     }, [activeTab]);
 
     return (
@@ -373,6 +396,7 @@ export default function Login() {
                                         id="email-recovery"
                                         type="email"
                                         value={email}
+                                        disabled={isCode}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
                                     />
@@ -403,14 +427,19 @@ export default function Login() {
                                         <Input
                                             id="reset-password"
                                             type="password"
-                                            value={recoveryPassword}
-                                            onChange={(e) => setRecoveryPassword(e.target.value)}
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
                                             placeholder="type your new password"
                                             required
                                         />
                                     </div>
                                 )}
-                                <Button type="submit" className="w-full">
+                                <Button
+                                    type="submit"
+                                    className="w-full flex justify-center items-center gap-2"
+                                    disabled={loadingRecovery}
+                                >
+                                    {loadingRecovery ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                     {updatePassword
                                         ? 'Update Password'
                                         : isCode

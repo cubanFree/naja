@@ -9,9 +9,13 @@ export const metadata = {
 export default function ProtectedLayout({ children }) {
     return (
         <LoadingContent>
-            <HeaderProtected />
-            {children}
-            <FooterProtected />
+            <div className="flex flex-col h-screen">
+                <HeaderProtected />
+                <div className="flex-1 overflow-y-auto">
+                    {children}
+                </div>
+                <FooterProtected />
+            </div>
         </LoadingContent>
     )
 }
