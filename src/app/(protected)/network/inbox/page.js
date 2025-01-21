@@ -1,17 +1,13 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Send } from 'lucide-react'
+import { Send, User2Icon, UsersIcon, LockIcon, ArrowDown } from 'lucide-react'
 import SearchBarInbox from "@/components/protectedUi/network/searchBarInbox"
-import { User2Icon } from "lucide-react"
-import { UsersIcon } from "lucide-react"
-import { LockIcon } from "lucide-react"
-import { ArrowDown } from "lucide-react"
 
 const individualChats = [
     { id: '1', name: 'Alice Johnson', lastMessage: 'See you tomorrow!', avatar: 'https://i.pravatar.cc/150?img=1', unread: 0 },
@@ -43,9 +39,8 @@ export default function Inbox() {
     const [activeChat, setActiveChat] = useState(individualChats[0])
     const [searchTerm, setSearchTerm] = useState('')
     const [newMessage, setNewMessage] = useState('')
-
-    const scrollAreaRef = useRef(null);
-    const [showScrollButton, setShowScrollButton] = useState(false);
+    const [showScrollButton, setShowScrollButton] = useState(false)
+    const scrollContainerRef = useRef(null)
 
     const filteredIndividualChats = individualChats.filter(chat =>
         chat.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -55,26 +50,24 @@ export default function Inbox() {
     )
 
     const handleScroll = (event) => {
-        const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
-        const isNearBottom = scrollHeight - scrollTop - clientHeight < 50;
+        const element = event.currentTarget;
+        const isNearBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 100;
         setShowScrollButton(!isNearBottom);
     };
 
     const scrollToBottom = () => {
-        if (scrollAreaRef.current) {
-            scrollAreaRef.current.scrollTo({
-                top: scrollAreaRef.current.scrollHeight,
+        if (scrollContainerRef.current) {
+            const scrollContainer = scrollContainerRef.current;
+            scrollContainer.scrollTo({
+                top: scrollContainer.scrollHeight,
                 behavior: 'smooth'
             });
         }
     };
 
-    // Efecto para hacer scroll automático cuando llegan nuevos mensajes
     useEffect(() => {
-        if (!showScrollButton) {
-            scrollToBottom();
-        }
-    }, [messages]); // Se ejecuta cuando cambian los mensajes
+        scrollToBottom();
+    }, [activeChat]);
 
     return (
         <div className="w-full flex flex-col h-full">
@@ -156,40 +149,39 @@ export default function Inbox() {
                                 </Avatar>
                                 <div className="font-semibold">{activeChat.name}</div>
                             </div>
-                            <ScrollArea
-                                ref={scrollAreaRef}
-                                onScroll={handleScroll}
-                                className="flex-1 px-4 relative"
-                            >
-                                {/* Banner */}
-                                <span className="flex justify-center text-center text-sm text-gray-500 py-10 max-w-lg mx-auto">
-                                    <LockIcon className="w-4 h-4" />
-                                    Messages are end-to-end encrypted. No one outside of this chat,
-                                    including ChatGPT, can read or listen to them.
-                                </span>
+                            <div className="flex-1 overflow-hidden relative">
+                                <div
+                                    ref={scrollContainerRef}
+                                    onScroll={handleScroll}
+                                    className="h-full overflow-y-auto p-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                                >
+                                    <span className="flex justify-center text-center text-sm text-gray-500 py-10 max-w-lg mx-auto">
+                                        <LockIcon className="w-4 h-4" />
+                                        Messages are end-to-end encrypted. No one outside of this chat,
+                                        including ChatGPT, can read or listen to them.
+                                    </span>
 
-                                {messages.map(message => (
-                                    <div key={message.id} className={`mb-4 ${message.sender === 'You' ? 'text-right' : ''}`}>
-                                        <div className={`inline-block p-2 rounded-lg ${message.sender === 'You' ? 'bg-blue-500 text-white' : 'bg-gray-800'
-                                            }`}>
-                                            {message.content}
+                                    {messages.map(message => (
+                                        <div key={message.id} className={`mb-4 ${message.sender === 'You' ? 'text-right' : ''}`}>
+                                            <div className={`inline-block p-2 rounded-lg ${message.sender === 'You' ? 'bg-blue-500 text-white' : 'bg-gray-800'
+                                                }`}>
+                                                {message.content}
+                                            </div>
+                                            <div className="text-xs text-gray-500 mt-1">{message.timestamp}</div>
                                         </div>
-                                        <div className="text-xs text-gray-500 mt-1">{message.timestamp}</div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
 
-                                {/* Botón de scroll to bottom */}
+                                {/* Botón de scroll to top */}
                                 {showScrollButton && (
                                     <button
                                         onClick={scrollToBottom}
-                                        className="absolute top-0 left-0 p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg transition-all duration-300 flex items-center gap-1"
-                                        aria-label="Ir a mensajes recientes"
+                                        className="absolute bottom-5 right-5 p-1 bg-gray-700 text-white rounded-full shadow-lg hover:bg-gray-800 transition-all duration-300 z-50"
                                     >
-                                        <ArrowDown className="h-4 w-4" />
-                                        <span className="text-xs">Nuevos mensajes</span>
+                                        <ArrowDown size={20} />
                                     </button>
                                 )}
-                            </ScrollArea>
+                            </div>
                             <div className="p-4 flex">
                                 <Input
                                     type="text"
@@ -214,4 +206,3 @@ export default function Inbox() {
         </div>
     )
 }
-

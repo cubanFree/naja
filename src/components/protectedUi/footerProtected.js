@@ -14,7 +14,7 @@ export default function FooterProtected() {
         { icon: <Map className="h-6 w-6" />, text: 'Mapa', href: '/home' },
         { icon: <Warehouse className="h-6 w-6" />, text: 'Almacenes', href: '/warehouse' },
         { icon: <Globe className="h-6 w-6" />, text: 'Network', href: '/network' },
-        { icon: <TrendingUp className="h-6 w-6" />, text: 'Tendencias', href: '/traders' },
+        { icon: <TrendingUp className="h-6 w-6" />, text: 'Mercado', href: '/traders' },
     ]
 
     return (

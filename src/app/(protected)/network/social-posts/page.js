@@ -11,12 +11,15 @@ import { ArrowUp } from "lucide-react";
 export default function Home() {
     const [tab, setTab] = useState("para-ti");
     const [showScrollButton, setShowScrollButton] = useState(false);
+    const [postText, setPostText] = useState("");
+
     const textareaRef = useRef(null);
     const scrollContainerRef = useRef(null);
 
     const adjustTextareaHeight = () => {
         const textarea = textareaRef.current;
         if (textarea) {
+            setPostText(textarea.value);
             textarea.style.height = 'auto';
             textarea.style.height = textarea.scrollHeight + 'px';
         }
@@ -43,7 +46,7 @@ export default function Home() {
             {showScrollButton && (
                 <button
                     onClick={scrollToTop}
-                    className="absolute bottom-5 right-5 p-1 bg-gray-700 text-white rounded-full shadow-lg hover:bg-blue-600 transition-all duration-300 z-50"
+                    className="absolute bottom-5 right-5 p-1 bg-gray-700 text-white rounded-full shadow-lg hover:bg-gray-800 transition-all duration-300 z-50"
                 >
                     <ArrowUp size={20} />
                 </button>
@@ -89,7 +92,7 @@ export default function Home() {
                         rows={1}
                     ></textarea>
                     <div className="flex justify-end w-full">
-                        <button className="px-4 py-2 dark:bg-gray-100 dark:text-black rounded-lg">Publicar</button>
+                        <button disabled={!postText} className="px-4 py-2 dark:bg-gray-100 dark:text-black rounded-lg disabled:opacity-50">Publicar</button>
                     </div>
                 </div>
 

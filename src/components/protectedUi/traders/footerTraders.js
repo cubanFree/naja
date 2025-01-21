@@ -1,26 +1,39 @@
 'use client'
 
-import { cn } from "@/lib/utils";
-import { MessageSquare } from "lucide-react";
-import { InboxIcon } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils"
+import { LineChart, BookText, Wallet, Building2, LandmarkIcon } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 const navigationItems = [
     {
-        href: "/network/inbox",
-        icon: InboxIcon,
-        label: "Inbox"
+        href: "/traders/assets",
+        icon: BookText,
+        label: "Assets"
     },
     {
-        href: "/network/social-posts",
-        icon: MessageSquare,
-        label: "Social Posts"
+        href: "/traders/agreement",
+        icon: Wallet,
+        label: "Agreement"
+    },
+    {
+        href: "/traders/bonds",
+        icon: Building2,
+        label: "Bonds"
+    },
+    {
+        href: "/traders/graphics",
+        icon: LineChart,
+        label: "Graphics"
+    },
+    {
+        href: "/traders/government",
+        icon: LandmarkIcon,
+        label: "Government"
     }
 ]
 
-export default function FooterNetwork() {
-
+export default function FooterTraders() {
     const pathname = usePathname()
 
     return (

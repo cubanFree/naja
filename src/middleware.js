@@ -18,6 +18,8 @@ export default async function middleware(req) {
         // Redirecciones
         const REDIRECT_ROUTES = {
             '/network': '/network/inbox',
+            '/warehouse': '/warehouse/summaries',
+            '/traders': '/traders/assets'
         }
         if (pathname in REDIRECT_ROUTES) {
             const url = req.nextUrl.clone()
